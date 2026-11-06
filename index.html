@@ -127,7 +127,7 @@ dl.kv dd{margin:0}
     <p>โครงงาน AI × Allium test · อำเภอคลองหาด จังหวัดสระแก้ว</p>
     <nav class="tabs">
       <a href="#form" id="tab-form" class="on">ส่งข้อมูล</a>
-      <a href="#teacher" id="tab-teacher">หน้าครู</a>
+      <a href="#summary" id="tab-teacher">สรุปข้อมูล</a>
     </nav>
   </div>
 </header>
@@ -301,15 +301,11 @@ dl.kv dd{margin:0}
     </div>
   </section>
 
-  <!-- ================= TEACHER ================= -->
+  <!-- ================= SUMMARY ================= -->
   <section id="view-teacher" class="wrap wide hidden">
     <div class="panel pinbox" id="pinBox">
-      <h2>เข้าสู่หน้าครู</h2>
-      <form id="pinForm" class="row">
-        <input type="password" id="pin" placeholder="รหัสครู" inputmode="numeric" autocomplete="off" style="flex:1">
-        <button class="btn primary" type="submit" id="pinBtn">เข้าดู</button>
-      </form>
-      <div class="hint" id="pinMsg"></div>
+      <h2>สรุปข้อมูล</h2>
+      <div class="hint" id="pinMsg">กำลังโหลดข้อมูล...</div>
     </div>
 
     <div id="dash" class="hidden">
@@ -371,13 +367,13 @@ function nowTime(){ const d=new Date(); return String(d.getHours()).padStart(2,'
 
 /* ---------- views ---------- */
 function route(){
-  const t = location.hash === '#teacher';
+  const t = location.hash === '#summary' || location.hash === '#teacher';
   $('#view-form').classList.toggle('hidden', t);
   $('#view-teacher').classList.toggle('hidden', !t);
   $('#tab-form').classList.toggle('on', !t);
   $('#tab-teacher').classList.toggle('on', t);
   $('#hwrap').classList.toggle('wide', t);
-  if (t && !teacherLoaded){ const p = store.get('soilPin','session'); if (p){ $('#pin').value = p; loadTeacher(p); } }
+  if (t && !teacherLoaded) loadTeacher();
 }
 window.addEventListener('hashchange', route);
 
@@ -635,26 +631,19 @@ function resetForNext(){
 
 /* ---------- teacher ---------- */
 let teacherLoaded = false, records = [], meta = {};
-$('#pinForm').addEventListener('submit', e => { e.preventDefault(); loadTeacher($('#pin').value.trim()); });
-$('#refreshBtn').addEventListener('click', () => loadTeacher(store.get('soilPin','session') || $('#pin').value.trim()));
+$('#refreshBtn').addEventListener('click', () => loadTeacher());
 $('#csvBtn').addEventListener('click', downloadCSV);
 ['#q','#fStudent','#fCrop'].forEach(s => $(s).addEventListener('input', renderCards));
 
-async function loadTeacher(pin){
+async function loadTeacher(){
   const msg = $('#pinMsg');
   if (!SCRIPT_URL){ msg.textContent = 'ยังไม่ได้ตั้งค่า SCRIPT_URL ในไฟล์ index.html'; return; }
-  if (!pin){ msg.textContent = 'ใส่รหัสครู'; return; }
   msg.textContent = 'กำลังโหลดข้อมูล...';
-  $('#pinBtn').disabled = true; $('#refreshBtn').disabled = true;
+  $('#refreshBtn').disabled = true;
   try {
-    const res = await fetch(SCRIPT_URL, {method:'POST', headers:{'Content-Type':'text/plain;charset=utf-8'}, body: JSON.stringify({action:'list', pin})});
+    const res = await fetch(SCRIPT_URL, {method:'POST', headers:{'Content-Type':'text/plain;charset=utf-8'}, body: JSON.stringify({action:'list'})});
     const out = await res.json();
-    if (!out.ok){
-      msg.textContent = out.error || 'โหลดไม่สำเร็จ';
-      if (out.auth === false){ $('#dash').classList.add('hidden'); $('#pinBox').classList.remove('hidden'); }
-      return;
-    }
-    store.set('soilPin', pin, 'session');
+    if (!out.ok){ msg.textContent = out.error || 'โหลดไม่สำเร็จ'; return; }
     records = out.records || [];
     meta = out;
     teacherLoaded = true;
@@ -665,7 +654,7 @@ async function loadTeacher(pin){
   } catch(err){
     msg.textContent = 'โหลดไม่สำเร็จ: ' + err.message;
   } finally {
-    $('#pinBtn').disabled = false; $('#refreshBtn').disabled = false;
+    $('#refreshBtn').disabled = false;
   }
 }
 const toNum = v => { const n = parseFloat(v); return isFinite(n) ? n : 0; };
