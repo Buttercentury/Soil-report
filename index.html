@@ -1,0 +1,758 @@
+<!doctype html>
+<html lang="th">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>บันทึกตัวอย่างดิน</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Thai:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#f5f1e8; --card:#fffdf8; --ink:#2a251f; --muted:#6e6558; --line:#e2d9c8; --field:#fffefb;
+  --soil:#8a5a2b; --soil-d:#6b4420; --soil-l:#f3e8d9;
+  --leaf:#4b7536; --leaf-l:#e6efdc;
+  --warn:#b4452e; --warn-l:#fbe8e2; --info:#2f5f86; --info-l:#e4eef6;
+  --r:14px;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#1b1815; --card:#25211c; --ink:#efe8dc; --muted:#b0a594; --line:#3b342c; --field:#1f1c18;
+    --soil:#d49a5e; --soil-d:#e8b27a; --soil-l:#3a2c1f;
+    --leaf:#8fbf73; --leaf-l:#25321d;
+    --warn:#ef8a72; --warn-l:#3d231c; --info:#8ab8de; --info-l:#1c2a36;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#1b1815; --card:#25211c; --ink:#efe8dc; --muted:#b0a594; --line:#3b342c; --field:#1f1c18;
+  --soil:#d49a5e; --soil-d:#e8b27a; --soil-l:#3a2c1f;
+  --leaf:#8fbf73; --leaf-l:#25321d;
+  --warn:#ef8a72; --warn-l:#3d231c; --info:#8ab8de; --info-l:#1c2a36;
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.6 "IBM Plex Sans Thai",system-ui,sans-serif}
+a{color:var(--info)}
+header{background:var(--soil-d);color:#fff8ee;padding:18px 16px 0}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) header{background:#3a2a1c}}
+.wrap{max-width:760px;margin:0 auto}
+.wide{max-width:1120px}
+header h1{margin:0;font-size:1.35rem;line-height:1.3}
+header p{margin:2px 0 12px;opacity:.85;font-size:.92rem}
+.tabs{display:flex;gap:4px}
+.tabs a{color:#fff8ee;text-decoration:none;padding:9px 16px;border-radius:10px 10px 0 0;font-weight:500;opacity:.75}
+.tabs a.on{background:var(--bg);color:var(--ink);opacity:1}
+main{padding:16px 16px 48px}
+.banner{border-radius:var(--r);padding:12px 14px;margin-bottom:14px;font-size:.95rem}
+.banner.warn{background:var(--warn-l);color:var(--warn)}
+.banner.info{background:var(--info-l);color:var(--info)}
+.banner.ok{background:var(--leaf-l);color:var(--leaf)}
+fieldset{border:1px solid var(--line);background:var(--card);border-radius:var(--r);padding:16px;margin:0 0 14px}
+legend{padding:0 6px;font-weight:700;font-size:1.05rem;display:flex;gap:8px;align-items:center}
+legend .n{display:inline-grid;place-items:center;width:26px;height:26px;border-radius:50%;background:var(--soil);color:var(--card);font-size:.85rem}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.grid .full{grid-column:1/-1}
+@media (max-width:560px){.grid{grid-template-columns:1fr}}
+label.f{display:block;font-weight:600;font-size:.93rem;margin-bottom:4px}
+label.f .req{color:var(--warn)}
+.hint{color:var(--muted);font-size:.85rem;margin-top:3px}
+input[type=text],input[type=date],input[type=time],input[type=number],input[type=password],select,textarea{
+  width:100%;padding:10px 12px;border:1px solid var(--line);border-radius:10px;background:var(--field);color:var(--ink);font:inherit}
+textarea{min-height:84px;resize:vertical}
+input:focus,select:focus,textarea:focus{outline:2px solid var(--soil);outline-offset:1px}
+.bad input,.bad select,.bad .chips,.bad .drop{outline:2px solid var(--warn);outline-offset:2px;border-radius:10px}
+.chips{display:flex;flex-wrap:wrap;gap:8px}
+.chips label{display:inline-flex;align-items:center;gap:6px;padding:7px 12px;border:1px solid var(--line);border-radius:999px;background:var(--field);cursor:pointer;font-size:.93rem;user-select:none}
+.chips input{accent-color:var(--soil);margin:0}
+.chips label:has(input:checked){background:var(--soil-l);border-color:var(--soil);color:var(--soil-d);font-weight:600}
+.code{font-family:ui-monospace,Menlo,monospace;letter-spacing:.5px}
+.bagline{margin-top:6px;font-size:.9rem;color:var(--leaf);font-weight:600}
+.row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.btn{appearance:none;border:1px solid var(--line);background:var(--field);color:var(--ink);font:inherit;font-weight:600;padding:9px 14px;border-radius:10px;cursor:pointer;text-decoration:none;display:inline-flex;gap:6px;align-items:center}
+.btn:hover{border-color:var(--soil)}
+.btn.primary{background:var(--soil);border-color:var(--soil);color:var(--card)}
+.btn.primary:disabled{opacity:.6;cursor:wait}
+.btn.big{width:100%;justify-content:center;padding:14px;font-size:1.05rem}
+.map{margin-top:10px;border-radius:12px;overflow:hidden;border:1px solid var(--line);display:none}
+.map iframe{display:block;width:100%;height:220px;border:0}
+.photo-group{border:1px dashed var(--line);border-radius:12px;padding:12px;margin-bottom:10px}
+.photo-group h3{margin:0 0 2px;font-size:.98rem}
+.drop{display:flex;gap:10px;flex-wrap:wrap;margin-top:8px}
+.thumb{position:relative;width:92px;height:92px;border-radius:10px;overflow:hidden;background:var(--soil-l)}
+.thumb img{width:100%;height:100%;object-fit:cover;display:block}
+.thumb button{position:absolute;top:4px;right:4px;width:26px;height:26px;border-radius:50%;border:0;background:rgba(0,0,0,.6);color:#fff;font-size:15px;cursor:pointer;line-height:1}
+.add{width:92px;height:92px;border-radius:10px;border:1.5px dashed var(--soil);display:grid;place-items:center;text-align:center;color:var(--soil-d);font-size:.82rem;font-weight:600;cursor:pointer;background:var(--field)}
+.add input{display:none}
+.errors{display:none}
+.errors ul{margin:6px 0 0;padding-left:20px}
+.done{text-align:center;padding:28px 16px}
+.done .bags{font-size:1.2rem;font-weight:700;color:var(--leaf);margin:8px 0}
+.hidden{display:none !important}
+/* teacher */
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:14px}
+@media (max-width:640px){.stats{grid-template-columns:repeat(2,1fr)}}
+.stat{background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:12px 14px}
+.stat b{display:block;font-size:1.7rem;line-height:1.2;color:var(--soil-d)}
+.stat span{color:var(--muted);font-size:.88rem}
+.panel{background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:14px;margin-bottom:14px}
+.panel h2{margin:0 0 10px;font-size:1.05rem}
+.tbl{width:100%;border-collapse:collapse;font-size:.93rem}
+.tbl th,.tbl td{text-align:left;padding:8px 6px;border-bottom:1px solid var(--line);vertical-align:top}
+.tbl th{color:var(--muted);font-weight:600;font-size:.85rem}
+.tbl td.num,.tbl th.num{text-align:right;font-variant-numeric:tabular-nums}
+.scroll{overflow-x:auto}
+.filters{display:grid;grid-template-columns:2fr 1fr 1fr;gap:8px;margin-bottom:12px}
+@media (max-width:640px){.filters{grid-template-columns:1fr}}
+.cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:12px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:14px}
+.card h3{margin:0;font-size:1.05rem}
+.meta{color:var(--muted);font-size:.86rem}
+.tag{display:inline-block;padding:1px 9px;border-radius:999px;font-size:.8rem;font-weight:600;background:var(--soil-l);color:var(--soil-d);margin:2px 4px 2px 0}
+.tag.g{background:var(--leaf-l);color:var(--leaf)}
+.tag.w{background:var(--warn-l);color:var(--warn)}
+dl.kv{display:grid;grid-template-columns:auto 1fr;gap:2px 10px;margin:10px 0;font-size:.9rem}
+dl.kv dt{color:var(--muted)}
+dl.kv dd{margin:0}
+.pics{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px}
+.pics a{display:block;width:64px;height:64px;border-radius:8px;overflow:hidden;background:var(--soil-l);position:relative}
+.pics img{width:100%;height:100%;object-fit:cover}
+.pics a span{position:absolute;left:0;right:0;bottom:0;background:rgba(0,0,0,.55);color:#fff;font-size:.68rem;text-align:center}
+.pinbox{max-width:380px;margin:30px auto}
+</style>
+</head>
+<body>
+<header>
+  <div class="wrap" id="hwrap">
+    <h1>บันทึกการเก็บตัวอย่างดิน</h1>
+    <p>โครงงาน AI × Allium test · อำเภอคลองหาด จังหวัดสระแก้ว</p>
+    <nav class="tabs">
+      <a href="#form" id="tab-form" class="on">ส่งข้อมูล</a>
+      <a href="#teacher" id="tab-teacher">หน้าครู</a>
+    </nav>
+  </div>
+</header>
+
+<main>
+  <!-- ================= FORM ================= -->
+  <section id="view-form" class="wrap">
+    <div class="banner warn hidden" id="noUrl">ยังไม่ได้ตั้งค่า SCRIPT_URL ในไฟล์นี้ ตอนนี้เป็นโหมดทดลอง ข้อมูลจะยังไม่ถูกส่งจริง</div>
+
+    <form id="soilForm" novalidate>
+      <div class="banner warn errors" id="errors"><b>ยังกรอกไม่ครบ</b><ul id="errList"></ul></div>
+
+      <fieldset>
+        <legend><span class="n">1</span>ข้อมูลบนป้ายถุง</legend>
+        <div class="grid">
+          <div class="full" data-f="crop">
+            <label class="f">ชนิดพืชในแปลง <span class="req">*</span></label>
+            <div class="chips" id="cropChips"></div>
+            <input type="text" id="cropOther" class="hidden" placeholder="ระบุชนิดพืช" style="margin-top:8px">
+          </div>
+          <div class="full" data-f="code">
+            <label class="f" for="code">รหัสแปลง <span class="req">*</span></label>
+            <input type="text" id="code" class="code" placeholder="เช่น KH-LY01" autocomplete="off" autocapitalize="characters">
+            <div class="hint">KH-[รหัสพืช][เลขแปลง 2 หลัก] เขียนให้ตรงกับป้ายบนถุง ไม่ต้องใส่ -A หรือ -B</div>
+          </div>
+          <div class="full" data-f="bags">
+            <label class="f">ถุงที่เก็บ <span class="req">*</span></label>
+            <div class="chips">
+              <label><input type="checkbox" name="bag" value="A" checked> ถุง A (ใช้ทดลอง)</label>
+              <label><input type="checkbox" name="bag" value="B" checked> ถุง B (สำรอง)</label>
+            </div>
+            <div class="bagline code" id="bagLine"></div>
+          </div>
+          <div data-f="date">
+            <label class="f" for="date">วันที่เก็บ <span class="req">*</span></label>
+            <input type="date" id="date">
+          </div>
+          <div>
+            <label class="f" for="time">เวลาเก็บ</label>
+            <input type="time" id="time">
+          </div>
+          <div data-f="collector">
+            <label class="f" for="collector">ผู้เก็บ <span class="req">*</span></label>
+            <input type="text" id="collector" placeholder="ชื่อ-นามสกุล" autocomplete="name">
+          </div>
+          <div>
+            <label class="f" for="klass">ชั้น / เลขที่</label>
+            <input type="text" id="klass" placeholder="เช่น ม.5/1 เลขที่ 12">
+          </div>
+        </div>
+      </fieldset>
+
+      <fieldset>
+        <legend><span class="n">2</span>สถานที่และพิกัด</legend>
+        <div class="grid">
+          <div>
+            <label class="f" for="village">หมู่บ้าน</label>
+            <input type="text" id="village" placeholder="ชื่อหมู่บ้าน / หมู่ที่">
+          </div>
+          <div data-f="tambon">
+            <label class="f" for="tambon">ตำบล <span class="req">*</span></label>
+            <select id="tambon"></select>
+          </div>
+          <div class="full" data-f="coords">
+            <label class="f">พิกัดจุดเก็บ <span class="req">*</span></label>
+            <div class="row">
+              <button type="button" class="btn primary" id="gpsBtn">📍 ใช้ตำแหน่งปัจจุบัน</button>
+              <span class="hint" id="gpsStatus">กดตอนยืนอยู่ในแปลง</span>
+            </div>
+            <div style="margin-top:10px">
+              <input type="text" id="paste" placeholder="หรือวางพิกัด/ลิงก์จาก Google Maps เช่น 13.4213, 102.3147">
+              <div class="hint">ใน Google Maps กดค้างที่จุดบนแผนที่ แล้วคัดลอกตัวเลขพิกัดมาวาง</div>
+            </div>
+            <div class="grid" style="margin-top:10px">
+              <div><label class="f" for="lat">ละติจูด</label><input type="number" id="lat" step="any" inputmode="decimal"></div>
+              <div><label class="f" for="lng">ลองจิจูด</label><input type="number" id="lng" step="any" inputmode="decimal"></div>
+            </div>
+            <div class="map" id="mapBox">
+              <iframe id="mapFrame" title="แผนที่จุดเก็บ" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
+            </div>
+            <div class="row" style="margin-top:8px"><a class="btn hidden" id="mapLink" target="_blank" rel="noopener">เปิดใน Google Maps ↗</a><span class="hint" id="coordWarn"></span></div>
+          </div>
+        </div>
+      </fieldset>
+
+      <fieldset>
+        <legend><span class="n">3</span>รายละเอียดแปลงและการเก็บ</legend>
+        <div class="grid">
+          <div data-f="depth">
+            <label class="f" for="depth">ความลึกที่ตัก <span class="req">*</span></label>
+            <select id="depth"><option value="0–5 ซม.">0–5 ซม. (ผิวดิน)</option><option value="0–10 ซม.">0–10 ซม.</option></select>
+          </div>
+          <div data-f="points">
+            <label class="f" for="points">จำนวนจุดที่ตักรวม <span class="req">*</span></label>
+            <input type="number" id="points" min="1" max="30" inputmode="numeric" placeholder="แนะนำ 5–10 จุด">
+          </div>
+          <div class="full">
+            <label class="f">สารกำจัดวัชพืชที่เจ้าของแปลงใช้ (เลือกได้หลายข้อ)</label>
+            <div class="chips" id="herbChips"></div>
+          </div>
+          <div class="full">
+            <label class="f" for="herbName">ชื่อการค้า / ยี่ห้อยาที่ใช้</label>
+            <input type="text" id="herbName" placeholder="ดูจากฉลากขวด">
+          </div>
+          <div>
+            <label class="f" for="sprayDate">ฉีดล่าสุดเมื่อ</label>
+            <input type="date" id="sprayDate">
+            <div class="chips" style="margin-top:6px"><label><input type="checkbox" id="sprayUnknown"> ไม่ทราบ</label></div>
+          </div>
+          <div>
+            <label class="f">ฉีดก่อนวันเก็บ</label>
+            <div id="daysAgo" style="padding:10px 0;font-weight:600">–</div>
+          </div>
+          <div class="full" data-f="grass">
+            <label class="f">สภาพหญ้าบริเวณที่ตัก <span class="req">*</span></label>
+            <div class="chips">
+              <label><input type="radio" name="grass" value="เขียวปกติ"> เขียวปกติ</label>
+              <label><input type="radio" name="grass" value="เหลือง"> เหลือง</label>
+              <label><input type="radio" name="grass" value="เหี่ยว/แห้งตาย"> เหี่ยว / แห้งตาย</label>
+              <label><input type="radio" name="grass" value="ปนกันหลายสภาพ"> ปนกันหลายสภาพ</label>
+            </div>
+          </div>
+          <div class="full">
+            <label class="f">ลักษณะดิน</label>
+            <div class="chips">
+              <label><input type="radio" name="soilType" value="ดินร่วน"> ดินร่วน</label>
+              <label><input type="radio" name="soilType" value="ดินทราย"> ดินทราย</label>
+              <label><input type="radio" name="soilType" value="ดินเหนียว"> ดินเหนียว</label>
+              <label><input type="radio" name="soilType" value="ไม่แน่ใจ"> ไม่แน่ใจ</label>
+            </div>
+          </div>
+          <div class="full">
+            <label class="f">ความชื้นดิน</label>
+            <div class="chips">
+              <label><input type="radio" name="moisture" value="แห้ง"> แห้ง</label>
+              <label><input type="radio" name="moisture" value="ชื้น"> ชื้น</label>
+              <label><input type="radio" name="moisture" value="เปียก"> เปียก</label>
+            </div>
+          </div>
+          <div class="full">
+            <label class="f">สภาพอากาศวันเก็บ</label>
+            <div class="chips">
+              <label><input type="radio" name="weather" value="แดดจัด"> แดดจัด</label>
+              <label><input type="radio" name="weather" value="ครึ้ม"> ครึ้ม</label>
+              <label><input type="radio" name="weather" value="ฝนเพิ่งตก"> ฝนเพิ่งตก (ภายใน 2 วัน)</label>
+            </div>
+          </div>
+          <div class="full">
+            <label class="f" for="notes">หมายเหตุเพิ่มเติม</label>
+            <textarea id="notes" placeholder="เช่น ใกล้ลำห้วย แปลงเพิ่งไถ มีกองขยะใกล้ ๆ สิ่งที่สังเกตเห็นอื่น ๆ"></textarea>
+          </div>
+        </div>
+      </fieldset>
+
+      <fieldset>
+        <legend><span class="n">4</span>แนบรูปภาพ</legend>
+        <div class="hint" style="margin:0 0 10px">เลือกรูปที่ถ่ายไว้แล้วจากเครื่อง หมวดละไม่เกิน 3 รูป ระบบจะย่อขนาดรูปให้อัตโนมัติ</div>
+        <div id="photoGroups"></div>
+      </fieldset>
+
+      <button type="submit" class="btn primary big" id="submitBtn">ส่งข้อมูล</button>
+      <div class="banner warn hidden" id="sendErr" style="margin-top:12px"></div>
+    </form>
+
+    <div class="panel done hidden" id="donePanel">
+      <div style="font-size:2.4rem">✅</div>
+      <h2 id="doneTitle">ส่งข้อมูลเรียบร้อย</h2>
+      <div class="bags code" id="doneBags"></div>
+      <p class="meta" id="doneMeta"></p>
+      <button type="button" class="btn primary" id="againBtn">บันทึกแปลงถัดไป</button>
+    </div>
+  </section>
+
+  <!-- ================= TEACHER ================= -->
+  <section id="view-teacher" class="wrap wide hidden">
+    <div class="panel pinbox" id="pinBox">
+      <h2>เข้าสู่หน้าครู</h2>
+      <form id="pinForm" class="row">
+        <input type="password" id="pin" placeholder="รหัสครู" inputmode="numeric" autocomplete="off" style="flex:1">
+        <button class="btn primary" type="submit" id="pinBtn">เข้าดู</button>
+      </form>
+      <div class="hint" id="pinMsg"></div>
+    </div>
+
+    <div id="dash" class="hidden">
+      <div class="row" style="justify-content:space-between;margin-bottom:12px">
+        <div class="meta" id="updated"></div>
+        <div class="row">
+          <button class="btn" id="refreshBtn">↻ รีเฟรช</button>
+          <button class="btn" id="csvBtn">ดาวน์โหลด CSV</button>
+          <a class="btn" id="sheetLink" target="_blank" rel="noopener">เปิด Google Sheet</a>
+          <a class="btn" id="folderLink" target="_blank" rel="noopener">โฟลเดอร์รูป</a>
+        </div>
+      </div>
+      <div class="stats" id="stats"></div>
+      <div class="panel">
+        <h2>สรุปรายนักเรียน</h2>
+        <div class="scroll"><table class="tbl" id="studentTbl"></table></div>
+      </div>
+      <div class="panel">
+        <h2>สรุปรายชนิดพืช</h2>
+        <div class="scroll"><table class="tbl" id="cropTbl"></table></div>
+      </div>
+      <div class="filters">
+        <input type="text" id="q" placeholder="ค้นหารหัสแปลง หมู่บ้าน ยี่ห้อยา">
+        <select id="fStudent"></select>
+        <select id="fCrop"></select>
+      </div>
+      <div class="meta" id="countLine" style="margin-bottom:8px"></div>
+      <div class="cards" id="cards"></div>
+    </div>
+  </section>
+</main>
+
+<script>
+/* ===== ตั้งค่า: วาง Web app URL จาก Google Apps Script ตรงนี้ ===== */
+const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxgyJ0L2txNBcNlAF1tJ5Nk5FbF64bA7oJCtaxvO-otX2YV2uyYNRq7iGn3-GIsq9Q8wQ/exec';
+
+const CROPS = [['ลำไย','LY'],['ข้าวโพด','CN'],['อ้อย','SC'],['มันสำปะหลัง','CS'],['ข้าว','RC'],['ดินอ้างอิง (ไม่ใช้สารเคมี)','REF'],['อื่น ๆ','OT']];
+const TAMBONS = ['คลองหาด','ไทยอุดม','ซับมะกรูด','ไทรเดี่ยว','คลองไก่เถื่อน','เบญจขร','ไทรทอง','อื่น ๆ (ระบุในหมายเหตุ)'];
+const HERBS = ['ไกลโฟเซต','กลูโฟซิเนต','2,4-ดี','อาทราซีน','อะมีทรีน','พาราควอต','ไม่ทราบ','อื่น ๆ'];
+const PHOTO_CATS = [
+  {k:'soil', t:'รูปสภาพดิน', d:'ดินบริเวณที่ตัก ถ่ายใกล้ ๆ ให้เห็นเนื้อดิน', req:true},
+  {k:'grass', t:'รูปสภาพหญ้า', d:'หญ้าที่คาดว่าโดนฉีด ให้เห็นสีและลักษณะใบ', req:true},
+  {k:'env', t:'รูปสิ่งแวดล้อมรอบบริเวณ', d:'ภาพมุมกว้างของแปลงและสิ่งรอบ ๆ', req:true},
+  {k:'label', t:'รูปฉลากยาฆ่าหญ้า', d:'ถ้าเจ้าของแปลงมีขวดยาให้ถ่าย (ไม่บังคับ)', req:false}
+];
+const MAX_PER_CAT = 3;
+
+const $ = s => document.querySelector(s);
+const $$ = s => Array.from(document.querySelectorAll(s));
+const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const store = {
+  get(k, area='local'){ try{ return (area==='local'?localStorage:sessionStorage).getItem(k); }catch(e){ return null; } },
+  set(k, v, area='local'){ try{ (area==='local'?localStorage:sessionStorage).setItem(k, v); }catch(e){} }
+};
+const photos = {soil:[], grass:[], env:[], label:[]};
+
+function todayStr(){ const d=new Date(); return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0'); }
+function nowTime(){ const d=new Date(); return String(d.getHours()).padStart(2,'0')+':'+String(d.getMinutes()).padStart(2,'0'); }
+
+/* ---------- views ---------- */
+function route(){
+  const t = location.hash === '#teacher';
+  $('#view-form').classList.toggle('hidden', t);
+  $('#view-teacher').classList.toggle('hidden', !t);
+  $('#tab-form').classList.toggle('on', !t);
+  $('#tab-teacher').classList.toggle('on', t);
+  $('#hwrap').classList.toggle('wide', t);
+  if (t && !teacherLoaded){ const p = store.get('soilPin','session'); if (p){ $('#pin').value = p; loadTeacher(p); } }
+}
+window.addEventListener('hashchange', route);
+
+/* ---------- form setup ---------- */
+function initForm(){
+  if (!SCRIPT_URL) $('#noUrl').classList.remove('hidden');
+  $('#cropChips').innerHTML = CROPS.map(([n,c]) => `<label><input type="radio" name="crop" value="${esc(n)}" data-code="${c}"> ${esc(n)}</label>`).join('');
+  $('#herbChips').innerHTML = HERBS.map(n => `<label><input type="checkbox" name="herb" value="${esc(n)}"> ${esc(n)}</label>`).join('');
+  $('#tambon').innerHTML = '<option value="">– เลือกตำบล –</option>' + TAMBONS.map(t => `<option>${esc(t)}</option>`).join('');
+  $('#photoGroups').innerHTML = PHOTO_CATS.map(c => `
+    <div class="photo-group" data-f="photo-${c.k}">
+      <h3>${esc(c.t)} ${c.req?'<span style="color:var(--warn)">*</span>':''}</h3>
+      <div class="hint">${esc(c.d)}</div>
+      <div class="drop" id="drop-${c.k}"></div>
+    </div>`).join('');
+  PHOTO_CATS.forEach(c => renderPhotos(c.k));
+  $('#date').value = todayStr();
+  $('#time').value = nowTime();
+  $('#collector').value = store.get('soilCollector') || '';
+  $('#klass').value = store.get('soilKlass') || '';
+
+  $$('input[name=crop]').forEach(r => r.addEventListener('change', onCrop));
+  $('#code').addEventListener('input', onCode);
+  $$('input[name=bag]').forEach(b => b.addEventListener('change', onCode));
+  $('#gpsBtn').addEventListener('click', getGPS);
+  $('#paste').addEventListener('input', onPaste);
+  $('#lat').addEventListener('input', updateMap);
+  $('#lng').addEventListener('input', updateMap);
+  $('#sprayDate').addEventListener('input', updateDays);
+  $('#date').addEventListener('input', updateDays);
+  $('#sprayUnknown').addEventListener('change', () => { $('#sprayDate').disabled = $('#sprayUnknown').checked; updateDays(); });
+  $('#soilForm').addEventListener('submit', onSubmit);
+  $('#againBtn').addEventListener('click', resetForNext);
+}
+
+function onCrop(e){
+  const opt = e.target;
+  $('#cropOther').classList.toggle('hidden', opt.value !== 'อื่น ๆ');
+  const code = $('#code');
+  if (!code.value || /^KH-[A-Z]*\d*$/.test(code.value)) {
+    const num = (code.value.match(/\d+$/)||[''])[0];
+    code.value = 'KH-' + opt.dataset.code + num;
+  }
+  onCode();
+  code.focus();
+}
+function normCode(){
+  let v = $('#code').value.toUpperCase().replace(/\s+/g,'').replace(/-(A|B)$/,'');
+  return v;
+}
+function onCode(){
+  const el = $('#code');
+  const pos = el.selectionStart;
+  const up = el.value.toUpperCase();
+  if (up !== el.value){ el.value = up; try{ el.setSelectionRange(pos,pos); }catch(e){} }
+  const c = normCode();
+  const bags = $$('input[name=bag]:checked').map(b => b.value);
+  $('#bagLine').textContent = c && bags.length ? 'ป้ายถุง: ' + bags.map(b => c+'-'+b).join(' · ') : '';
+}
+
+/* ---------- coordinates ---------- */
+function getGPS(){
+  const st = $('#gpsStatus');
+  if (!navigator.geolocation){ st.textContent = 'อุปกรณ์นี้หาตำแหน่งไม่ได้ ให้วางพิกัดจาก Google Maps แทน'; return; }
+  st.textContent = 'กำลังหาตำแหน่ง...';
+  navigator.geolocation.getCurrentPosition(pos => {
+    $('#lat').value = pos.coords.latitude.toFixed(6);
+    $('#lng').value = pos.coords.longitude.toFixed(6);
+    $('#lat').dataset.acc = Math.round(pos.coords.accuracy);
+    st.textContent = 'ได้ตำแหน่งแล้ว (คลาดเคลื่อนประมาณ ' + Math.round(pos.coords.accuracy) + ' ม.)';
+    updateMap();
+  }, err => {
+    st.textContent = err.code === 1 ? 'ไม่ได้รับอนุญาตให้ใช้ตำแหน่ง ให้วางพิกัดจาก Google Maps แทน' : 'หาตำแหน่งไม่สำเร็จ ลองอีกครั้งหรือวางพิกัดจาก Google Maps';
+  }, {enableHighAccuracy:true, timeout:20000, maximumAge:0});
+}
+function onPaste(){
+  const s = $('#paste').value;
+  const m = s.match(/@?(-?\d{1,2}\.\d+)\s*,\s*(-?\d{1,3}\.\d+)/);
+  if (m){ $('#lat').value = (+m[1]).toFixed(6); $('#lng').value = (+m[2]).toFixed(6); delete $('#lat').dataset.acc; updateMap(); }
+}
+function coords(){
+  const lat = parseFloat($('#lat').value), lng = parseFloat($('#lng').value);
+  return (isFinite(lat) && isFinite(lng) && Math.abs(lat) <= 90 && Math.abs(lng) <= 180) ? {lat, lng} : null;
+}
+function updateMap(){
+  const c = coords();
+  const box = $('#mapBox'), link = $('#mapLink'), warn = $('#coordWarn');
+  if (!c){ box.style.display='none'; link.classList.add('hidden'); warn.textContent=''; return; }
+  const q = c.lat + ',' + c.lng;
+  const src = 'https://maps.google.com/maps?q=' + q + '&z=16&output=embed';
+  if ($('#mapFrame').src !== src) $('#mapFrame').src = src;
+  box.style.display = 'block';
+  link.href = 'https://www.google.com/maps?q=' + q;
+  link.classList.remove('hidden');
+  const inArea = c.lat > 13.0 && c.lat < 14.2 && c.lng > 101.8 && c.lng < 103.0;
+  warn.textContent = inArea ? '' : '⚠️ พิกัดอยู่นอกจังหวัดสระแก้ว ตรวจสอบอีกครั้ง';
+  warn.style.color = 'var(--warn)';
+}
+function updateDays(){
+  const out = $('#daysAgo');
+  if ($('#sprayUnknown').checked || !$('#sprayDate').value || !$('#date').value){ out.textContent = $('#sprayUnknown').checked ? 'ไม่ทราบ' : '–'; return; }
+  const d = Math.round((new Date($('#date').value) - new Date($('#sprayDate').value)) / 86400000);
+  out.textContent = d < 0 ? 'วันที่ฉีดอยู่หลังวันเก็บ ตรวจสอบอีกครั้ง' : d + ' วัน';
+}
+function daysAgoValue(){
+  if ($('#sprayUnknown').checked || !$('#sprayDate').value || !$('#date').value) return '';
+  const d = Math.round((new Date($('#date').value) - new Date($('#sprayDate').value)) / 86400000);
+  return d >= 0 ? d : '';
+}
+
+/* ---------- photos ---------- */
+function renderPhotos(k){
+  const list = photos[k];
+  const box = $('#drop-' + k);
+  box.innerHTML = list.map((p,i) => `<div class="thumb"><img src="${p.preview}" alt=""><button type="button" data-k="${k}" data-i="${i}" aria-label="ลบรูป">×</button></div>`).join('')
+    + (list.length < MAX_PER_CAT ? `<label class="add">＋<br>เลือกรูป<input type="file" accept="image/*" multiple data-k="${k}"></label>` : '');
+  box.querySelectorAll('button').forEach(b => b.addEventListener('click', () => { photos[b.dataset.k].splice(+b.dataset.i,1); renderPhotos(b.dataset.k); }));
+  const inp = box.querySelector('input[type=file]');
+  if (inp) inp.addEventListener('change', onFiles);
+}
+async function onFiles(e){
+  const k = e.target.dataset.k;
+  const files = Array.from(e.target.files || []).slice(0, MAX_PER_CAT - photos[k].length);
+  const box = $('#drop-' + k);
+  box.insertAdjacentHTML('beforeend', '<span class="hint" id="busy-'+k+'">กำลังย่อรูป...</span>');
+  for (const f of files){
+    try { photos[k].push(await compress(f)); }
+    catch(err){ alert(err.message); }
+  }
+  renderPhotos(k);
+}
+function compress(file){
+  return new Promise((resolve, reject) => {
+    const url = URL.createObjectURL(file);
+    const img = new Image();
+    img.onload = () => {
+      const max = 1600;
+      let w = img.naturalWidth, h = img.naturalHeight;
+      const s = Math.min(1, max / Math.max(w, h));
+      w = Math.round(w*s); h = Math.round(h*s);
+      const c = document.createElement('canvas');
+      c.width = w; c.height = h;
+      c.getContext('2d').drawImage(img, 0, 0, w, h);
+      URL.revokeObjectURL(url);
+      const dataUrl = c.toDataURL('image/jpeg', 0.82);
+      resolve({name: file.name, data: dataUrl.split(',')[1], preview: dataUrl});
+    };
+    img.onerror = () => { URL.revokeObjectURL(url); reject(new Error('เปิดไฟล์รูป "' + file.name + '" ไม่ได้ ลองเลือกรูปอื่น')); };
+    img.src = url;
+  });
+}
+
+/* ---------- validate & submit ---------- */
+function val(name){ const r = document.querySelector('input[name="'+name+'"]:checked'); return r ? r.value : ''; }
+function validate(){
+  $$('[data-f]').forEach(el => el.classList.remove('bad'));
+  const errs = [];
+  const bad = (f, msg) => { errs.push(msg); const el = document.querySelector('[data-f="'+f+'"]'); if (el) el.classList.add('bad'); };
+  const crop = val('crop');
+  if (!crop) bad('crop','เลือกชนิดพืช');
+  else if (crop === 'อื่น ๆ' && !$('#cropOther').value.trim()) bad('crop','ระบุชนิดพืช');
+  const code = normCode();
+  if (!/^KH-[A-Z]{2,3}\d{2,3}$/.test(code)) bad('code','รหัสแปลงต้องเป็นรูปแบบ KH-LY01');
+  if (!$$('input[name=bag]:checked').length) bad('bags','เลือกถุงที่เก็บอย่างน้อย 1 ถุง');
+  if (!$('#date').value) bad('date','ใส่วันที่เก็บ');
+  if (!$('#collector').value.trim()) bad('collector','ใส่ชื่อผู้เก็บ');
+  if (!$('#tambon').value) bad('tambon','เลือกตำบล');
+  if (!coords()) bad('coords','ใส่พิกัดจุดเก็บ');
+  const pts = parseInt($('#points').value, 10);
+  if (!(pts >= 1)) bad('points','ใส่จำนวนจุดที่ตักรวม');
+  if (!val('grass')) bad('grass','เลือกสภาพหญ้า');
+  PHOTO_CATS.filter(c => c.req).forEach(c => { if (!photos[c.k].length) bad('photo-'+c.k, 'แนบ' + c.t + 'อย่างน้อย 1 รูป'); });
+  const box = $('#errors');
+  if (errs.length){
+    $('#errList').innerHTML = errs.map(e => '<li>'+esc(e)+'</li>').join('');
+    box.style.display = 'block';
+    box.scrollIntoView({behavior:'smooth', block:'start'});
+  } else box.style.display = 'none';
+  return !errs.length;
+}
+function buildRecord(){
+  const crop = val('crop');
+  const c = coords();
+  const acc = $('#lat').dataset.acc;
+  const pack = k => photos[k].map(p => ({name: p.name, data: p.data}));
+  return {
+    code: normCode(),
+    bags: $$('input[name=bag]:checked').map(b => b.value),
+    date: $('#date').value, time: $('#time').value,
+    collector: $('#collector').value.trim(), klass: $('#klass').value.trim(),
+    village: $('#village').value.trim(), tambon: $('#tambon').value,
+    lat: c.lat, lng: c.lng, accuracy: acc ? acc : '',
+    crop: crop === 'อื่น ๆ' ? 'อื่น ๆ: ' + $('#cropOther').value.trim() : crop,
+    depth: $('#depth').value, points: $('#points').value,
+    herbicides: $$('input[name=herb]:checked').map(h => h.value),
+    herbicideName: $('#herbName').value.trim(),
+    sprayDate: $('#sprayUnknown').checked ? 'ไม่ทราบ' : $('#sprayDate').value,
+    sprayDaysAgo: daysAgoValue(),
+    grass: val('grass'), soilType: val('soilType'), moisture: val('moisture'), weather: val('weather'),
+    notes: $('#notes').value.trim(),
+    photos: {soil: pack('soil'), grass: pack('grass'), env: pack('env'), label: pack('label')}
+  };
+}
+async function onSubmit(e){
+  e.preventDefault();
+  $('#sendErr').classList.add('hidden');
+  if (!validate()) return;
+  const rec = buildRecord();
+  store.set('soilCollector', rec.collector);
+  store.set('soilKlass', rec.klass);
+  const n = Object.values(rec.photos).reduce((a,b) => a + b.length, 0);
+  const btn = $('#submitBtn');
+  btn.disabled = true;
+  btn.textContent = 'กำลังส่งข้อมูลและรูป ' + n + ' รูป... อย่าปิดหน้านี้';
+  try {
+    let out;
+    if (!SCRIPT_URL){
+      await new Promise(r => setTimeout(r, 700));
+      out = {ok:true, demo:true, bagCodes: rec.bags.map(b => rec.code+'-'+b), photoCount:n};
+    } else {
+      const res = await fetch(SCRIPT_URL, {method:'POST', headers:{'Content-Type':'text/plain;charset=utf-8'}, body: JSON.stringify({action:'submit', record: rec})});
+      out = await res.json();
+    }
+    if (!out.ok) throw new Error(out.error || 'ส่งไม่สำเร็จ');
+    $('#soilForm').classList.add('hidden');
+    $('#donePanel').classList.remove('hidden');
+    $('#doneTitle').textContent = out.demo ? 'โหมดทดลอง: ข้อมูลครบ แต่ยังไม่ได้ส่งจริง' : 'ส่งข้อมูลเรียบร้อย';
+    $('#doneBags').textContent = (out.bagCodes || []).join(' · ');
+    $('#doneMeta').textContent = rec.crop + ' · ' + rec.tambon + ' · รูป ' + out.photoCount + ' รูป';
+    window.scrollTo({top:0, behavior:'smooth'});
+  } catch(err){
+    const box = $('#sendErr');
+    box.textContent = 'ส่งไม่สำเร็จ: ' + err.message + ' — ข้อมูลยังอยู่ ลองกดส่งอีกครั้ง หรือตรวจสอบอินเทอร์เน็ต';
+    box.classList.remove('hidden');
+  } finally {
+    btn.disabled = false;
+    btn.textContent = 'ส่งข้อมูล';
+  }
+}
+function resetForNext(){
+  const keep = {collector: $('#collector').value, klass: $('#klass').value, date: $('#date').value};
+  $('#soilForm').reset();
+  Object.keys(photos).forEach(k => { photos[k] = []; renderPhotos(k); });
+  $('#collector').value = keep.collector; $('#klass').value = keep.klass; $('#date').value = keep.date;
+  $('#time').value = nowTime();
+  $('#sprayDate').disabled = false;
+  delete $('#lat').dataset.acc;
+  $('#cropOther').classList.add('hidden');
+  $('#gpsStatus').textContent = 'กดตอนยืนอยู่ในแปลง';
+  updateMap(); updateDays(); onCode();
+  $('#donePanel').classList.add('hidden');
+  $('#soilForm').classList.remove('hidden');
+  window.scrollTo({top:0});
+}
+
+/* ---------- teacher ---------- */
+let teacherLoaded = false, records = [], meta = {};
+$('#pinForm').addEventListener('submit', e => { e.preventDefault(); loadTeacher($('#pin').value.trim()); });
+$('#refreshBtn').addEventListener('click', () => loadTeacher(store.get('soilPin','session') || $('#pin').value.trim()));
+$('#csvBtn').addEventListener('click', downloadCSV);
+['#q','#fStudent','#fCrop'].forEach(s => $(s).addEventListener('input', renderCards));
+
+async function loadTeacher(pin){
+  const msg = $('#pinMsg');
+  if (!SCRIPT_URL){ msg.textContent = 'ยังไม่ได้ตั้งค่า SCRIPT_URL ในไฟล์ index.html'; return; }
+  if (!pin){ msg.textContent = 'ใส่รหัสครู'; return; }
+  msg.textContent = 'กำลังโหลดข้อมูล...';
+  $('#pinBtn').disabled = true; $('#refreshBtn').disabled = true;
+  try {
+    const res = await fetch(SCRIPT_URL, {method:'POST', headers:{'Content-Type':'text/plain;charset=utf-8'}, body: JSON.stringify({action:'list', pin})});
+    const out = await res.json();
+    if (!out.ok){
+      msg.textContent = out.error || 'โหลดไม่สำเร็จ';
+      if (out.auth === false){ $('#dash').classList.add('hidden'); $('#pinBox').classList.remove('hidden'); }
+      return;
+    }
+    store.set('soilPin', pin, 'session');
+    records = out.records || [];
+    meta = out;
+    teacherLoaded = true;
+    msg.textContent = '';
+    $('#pinBox').classList.add('hidden');
+    $('#dash').classList.remove('hidden');
+    renderDash();
+  } catch(err){
+    msg.textContent = 'โหลดไม่สำเร็จ: ' + err.message;
+  } finally {
+    $('#pinBtn').disabled = false; $('#refreshBtn').disabled = false;
+  }
+}
+const toNum = v => { const n = parseFloat(v); return isFinite(n) ? n : 0; };
+function renderDash(){
+  $('#updated').textContent = 'อัปเดตเมื่อ ' + new Date().toLocaleString('th-TH');
+  $('#sheetLink').href = meta.sheetUrl || '#';
+  $('#folderLink').href = meta.folderUrl || '#';
+  const bags = records.reduce((a,r) => a + toNum(r.bagCount), 0);
+  const pics = records.reduce((a,r) => a + toNum(r.photoCount), 0);
+  const students = new Set(records.map(r => r.collector.trim()));
+  $('#stats').innerHTML = [
+    ['ชุดข้อมูล (แปลง)', records.length], ['ถุงดินทั้งหมด', bags], ['รูปทั้งหมด', pics], ['นักเรียนที่ส่ง', students.size]
+  ].map(([t,v]) => `<div class="stat"><b>${v}</b><span>${t}</span></div>`).join('');
+
+  const by = {};
+  records.forEach(r => {
+    const k = r.collector.trim() || '(ไม่มีชื่อ)';
+    by[k] = by[k] || {name:k, klass:r.klass, sets:0, bags:0, pics:0, last:'', crops:new Set()};
+    const s = by[k];
+    s.sets++; s.bags += toNum(r.bagCount); s.pics += toNum(r.photoCount); s.crops.add(r.crop);
+    if (r.klass) s.klass = r.klass;
+    if (r.submittedAt > s.last) s.last = r.submittedAt;
+  });
+  const rows = Object.values(by).sort((a,b) => b.sets - a.sets || a.name.localeCompare(b.name,'th'));
+  $('#studentTbl').innerHTML = '<thead><tr><th>นักเรียน</th><th>ชั้น/เลขที่</th><th class="num">ชุดข้อมูล</th><th class="num">ถุง</th><th class="num">รูป</th><th>พืช</th><th>ส่งล่าสุด</th></tr></thead><tbody>'
+    + (rows.length ? rows.map(s => `<tr><td>${esc(s.name)}</td><td>${esc(s.klass)}</td><td class="num">${s.sets}</td><td class="num">${s.bags}</td><td class="num">${s.pics}</td><td>${[...s.crops].map(c => '<span class="tag">'+esc(c)+'</span>').join('')}</td><td class="meta">${esc(s.last)}</td></tr>`).join('')
+      : '<tr><td colspan="7" class="meta">ยังไม่มีนักเรียนส่งข้อมูล</td></tr>') + '</tbody>';
+
+  const bc = {};
+  records.forEach(r => { const k = r.crop || '–'; bc[k] = bc[k] || {sets:0,bags:0}; bc[k].sets++; bc[k].bags += toNum(r.bagCount); });
+  $('#cropTbl').innerHTML = '<thead><tr><th>ชนิดพืช</th><th class="num">จำนวนแปลง</th><th class="num">ถุง</th></tr></thead><tbody>'
+    + (Object.keys(bc).length ? Object.entries(bc).sort((a,b) => b[1].sets - a[1].sets).map(([k,v]) => `<tr><td>${esc(k)}</td><td class="num">${v.sets}</td><td class="num">${v.bags}</td></tr>`).join('')
+      : '<tr><td colspan="3" class="meta">–</td></tr>') + '</tbody>';
+
+  const fs = $('#fStudent').value, fc = $('#fCrop').value;
+  $('#fStudent').innerHTML = '<option value="">นักเรียนทุกคน</option>' + rows.map(s => `<option>${esc(s.name)}</option>`).join('');
+  $('#fCrop').innerHTML = '<option value="">พืชทุกชนิด</option>' + Object.keys(bc).map(k => `<option>${esc(k)}</option>`).join('');
+  $('#fStudent').value = fs; $('#fCrop').value = fc;
+  renderCards();
+}
+function renderCards(){
+  const q = $('#q').value.trim().toLowerCase(), fs = $('#fStudent').value, fc = $('#fCrop').value;
+  const codeCount = {};
+  records.forEach(r => codeCount[r.code] = (codeCount[r.code] || 0) + 1);
+  const list = records.filter(r =>
+    (!fs || r.collector.trim() === fs) && (!fc || r.crop === fc) &&
+    (!q || [r.code, r.village, r.tambon, r.herbicideName, r.herbicides, r.notes].join(' ').toLowerCase().includes(q))
+  ).slice().reverse();
+  $('#countLine').textContent = 'แสดง ' + list.length + ' จาก ' + records.length + ' ชุดข้อมูล';
+  const thumb = (ids, label) => ids.map(id => `<a href="https://drive.google.com/file/d/${encodeURIComponent(id)}/view" target="_blank" rel="noopener" title="${esc(label)}"><img loading="lazy" src="https://drive.google.com/thumbnail?id=${encodeURIComponent(id)}&sz=w200" alt="${esc(label)}"><span>${esc(label)}</span></a>`).join('');
+  const grassTag = g => g.includes('เขียว') ? 'g' : (g ? 'w' : '');
+  $('#cards').innerHTML = list.map(r => `
+    <article class="card">
+      <div class="row" style="justify-content:space-between">
+        <h3 class="code">${esc(r.code)}</h3>
+        ${codeCount[r.code] > 1 ? '<span class="tag w">รหัสซ้ำ</span>' : ''}
+      </div>
+      <div class="meta">${esc(r.bags)}</div>
+      <div style="margin-top:6px"><span class="tag">${esc(r.crop)}</span>${r.grass ? `<span class="tag ${grassTag(r.grass)}">หญ้า: ${esc(r.grass)}</span>` : ''}</div>
+      <dl class="kv">
+        <dt>ผู้เก็บ</dt><dd>${esc(r.collector)} ${r.klass ? '<span class="meta">('+esc(r.klass)+')</span>' : ''}</dd>
+        <dt>วันที่เก็บ</dt><dd>${esc(r.date)} ${esc(r.time)}</dd>
+        <dt>สถานที่</dt><dd>${esc([r.village, 'ต.'+r.tambon].filter(Boolean).join(' '))}</dd>
+        <dt>พิกัด</dt><dd>${r.mapUrl ? `<a href="${esc(r.mapUrl)}" target="_blank" rel="noopener">${esc(r.lat)}, ${esc(r.lng)} ↗</a>` : '–'}${r.accuracy ? ' <span class="meta">±'+esc(r.accuracy)+' ม.</span>' : ''}</dd>
+        <dt>การเก็บ</dt><dd>${esc(r.depth)} · ${esc(r.points)} จุด</dd>
+        <dt>ยาที่ใช้</dt><dd>${esc(r.herbicides || '–')}${r.herbicideName ? ' · '+esc(r.herbicideName) : ''}</dd>
+        <dt>ฉีดล่าสุด</dt><dd>${esc(r.sprayDate || '–')}${r.sprayDaysAgo !== '' ? ' ('+esc(r.sprayDaysAgo)+' วันก่อนเก็บ)' : ''}</dd>
+        <dt>ดิน</dt><dd>${esc([r.soilType, r.moisture].filter(Boolean).join(' · ') || '–')}</dd>
+        <dt>อากาศ</dt><dd>${esc(r.weather || '–')}</dd>
+        ${r.notes ? `<dt>หมายเหตุ</dt><dd>${esc(r.notes)}</dd>` : ''}
+      </dl>
+      <div class="pics">${thumb(r.photos.soil,'ดิน')}${thumb(r.photos.grass,'หญ้า')}${thumb(r.photos.env,'รอบแปลง')}${thumb(r.photos.label,'ฉลาก')}</div>
+      <div class="meta" style="margin-top:8px">ส่งเมื่อ ${esc(r.submittedAt)} · <a href="${esc(r.folderUrl)}" target="_blank" rel="noopener">โฟลเดอร์รูป</a></div>
+    </article>`).join('') || '<div class="meta">ไม่มีข้อมูลตรงกับตัวกรอง</div>';
+}
+function downloadCSV(){
+  const cols = [['code','รหัสแปลง'],['bags','ถุง'],['bagCount','จำนวนถุง'],['date','วันที่เก็บ'],['time','เวลา'],['collector','ผู้เก็บ'],['klass','ชั้น/เลขที่'],['village','หมู่บ้าน'],['tambon','ตำบล'],['lat','Latitude'],['lng','Longitude'],['crop','ชนิดพืช'],['depth','ความลึก'],['points','จุดที่ตัก'],['herbicides','สารที่ใช้'],['herbicideName','ยี่ห้อ'],['sprayDate','ฉีดล่าสุด'],['sprayDaysAgo','ฉีดก่อนเก็บ(วัน)'],['grass','สภาพหญ้า'],['soilType','ลักษณะดิน'],['moisture','ความชื้น'],['weather','อากาศ'],['notes','หมายเหตุ'],['photoCount','จำนวนรูป'],['folderUrl','โฟลเดอร์รูป']];
+  const q = v => { let s = String(v ?? ''); if (/^[=+\-@]/.test(s)) s = "'" + s; return '"' + s.replace(/"/g,'""') + '"'; };
+  const csv = '﻿' + [cols.map(c => q(c[1])).join(','), ...records.map(r => cols.map(c => q(r[c[0]])).join(','))].join('\r\n');
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(new Blob([csv], {type:'text/csv;charset=utf-8'}));
+  a.download = 'ตัวอย่างดิน-คลองหาด-' + todayStr() + '.csv';
+  document.body.appendChild(a); a.click(); a.remove();
+}
+
+initForm();
+route();
+</script>
+</body>
+</html>
